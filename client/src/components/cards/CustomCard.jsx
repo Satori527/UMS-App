@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { CiHome, CiMail, CiPhone } from "react-icons/ci";
 import { GrUser, GrUserAdmin } from "react-icons/gr";
+import { BarLoader } from 'react-spinners';
 import { toast } from 'react-toastify';
 import { axiosAPI } from '../../api/axiosAPI';
 import "./CustomCard.css";
@@ -15,7 +16,7 @@ function CustomCard({
     phone,
     address,
     role,
-    fetchUsers
+    fetchUsers,
 }) {
 
     const [expanded, setExpanded] = useState(false);
@@ -29,7 +30,7 @@ function CustomCard({
     const [sPhone, setSPhone] = useState(phone);
     const [sAddress, setSAddress] = useState(address);
     const [sRole, setSRole] = useState(role);
-
+    const [loading, setLoading] = useState(false);
     
 
     
@@ -39,7 +40,7 @@ function CustomCard({
     // }
 
     const handleSave = async () => {
-        console.log("saved");
+        setLoading(true);
         try {
                     const response = await axiosAPI.patch("/users/update", {
                         id,
@@ -54,6 +55,7 @@ function CustomCard({
                     if (response.status === 200) {
                         setEditing(false);
                         fetchUsers();
+                        setLoading(false);
                         toast.success("User updated successfully");
                     }
                     console.log(response);
@@ -69,6 +71,7 @@ function CustomCard({
     }
 
     const handleDelete = async () => {
+        setDeleting(true);
         console.log("deleted");
         try {
             const response = await axiosAPI.delete("/users/delete", {
@@ -77,6 +80,7 @@ function CustomCard({
             if (response.status === 200) {
                 setDisplay("none");
                 fetchUsers();
+                setDeleting(false);
                 toast.success("User deleted successfully");
             }
             console.log(response);
@@ -132,7 +136,7 @@ function CustomCard({
                     </div>}
                     
                 </div>
-                
+                {loading && <BarLoader width={'100%'}/>}
             </div>}
 
             {editing && <div  style={{  width: '100%', margin: '0 auto',display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '32px',  borderRadius: '24px'}}>
@@ -178,7 +182,7 @@ function CustomCard({
                         <button className='edit-btn text-green-500' style={{fontWeight:'bold'}} onClick={handleSave}>Save</button>
                     </div>
                 </div>
-
+                {loading && <BarLoader width={'100%'}/>}
                 </div>}
         </div>
     );

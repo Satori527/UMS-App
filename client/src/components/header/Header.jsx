@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { axiosAPI } from "../../api/axiosAPI";
 
-function Header({ setCreate, page, setUsers}) {
+function Header({ setCreate, page, setUsers, setLoading }) {
 
     const [query, setQuery] = useState("");
     const [debouncedQuery, setDebouncedQuery] = useState(query);
@@ -26,7 +26,7 @@ function Header({ setCreate, page, setUsers}) {
             console.log(data)
             if(data.status === 200){
                 setUsers(data.data.data)
-
+                setLoading(false)
             }
         } catch (error) {
             console.log(error)
@@ -34,7 +34,7 @@ function Header({ setCreate, page, setUsers}) {
     }
 
     useEffect(() => {
-        
+        setLoading(true)
         fetchUsersByName();
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [debouncedQuery])

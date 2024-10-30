@@ -3,6 +3,8 @@ import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { toast } from "react-toastify";
 
+import { useState } from 'react';
+import { BarLoader } from 'react-spinners';
 import { axiosAPI } from '../api/axiosAPI';
 import './AuthForm.css';
 
@@ -31,6 +33,7 @@ function SignupForm() {
     //     address: "sdf",
     //     phone: "sdf"
     // }))
+    const [loading, setLoading] = useState(false)
 
     const {register, handleSubmit,formState: {errors}} = useForm({
         
@@ -55,7 +58,7 @@ function SignupForm() {
     const navigate = useNavigate()
 
     const createUser = async(data) => {
-
+        setLoading(true)
         // const safeData = schema.safeParse(data)
         // if(safeData.success===false){
         //     console.log(safeData.error);
@@ -68,6 +71,7 @@ function SignupForm() {
 
             if(response.status === 201){
                 toast.success("SignUp Successful");
+                setLoading(false)
                 navigate("/")
             }
 
@@ -79,11 +83,11 @@ function SignupForm() {
     }
 
     return (
-        <div className="bg-gray-50 flex flex-col gap-3 justify-center border border-gray-300 border-solid px-8 pb-2 pt-8 rounded-xl shadow-lg align-middle min-w-[32rem] w-2/5 h-fit">
+        <div className="bg-gray-50 flex flex-col gap-3 justify-center border border-gray-300 border-solid  pt-8 rounded-xl shadow-lg align-middle min-w-[32rem] w-2/5 h-fit">
             <h1 className="text-black font-bold text-4xl">SignUp</h1>
             
             
-            <div className="py-6 ">
+            <div className="py-6 px-8 pb-2">
             <form  className="flex flex-col gap-3" onSubmit={handleSubmit(createUser)}>
                 <div className="flex flex-row gap-2 justify-evenly">
                     <div className="flex flex-col w-1/2">
@@ -163,7 +167,8 @@ function SignupForm() {
                     value="Submit" />
             </form>
             </div>
-            
+            {loading && <BarLoader width={"100%"}/>}
+            {!loading && <div className="h-1"></div>}
         </div>
     )
 }

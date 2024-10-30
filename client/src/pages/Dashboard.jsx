@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import CustomCard from "../components/cards/CustomCard";
 //import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { MoonLoader } from "react-spinners";
 import { axiosAPI } from "../api/axiosAPI";
 import CreateUserCard from "../components/cards/CreateUserCard";
 import Header from "../components/header/Header.jsx";
@@ -21,11 +22,10 @@ function Dashboard() {
     // }
 
     const [users, setUsers] = useState([]);
-
-
     const [create, setCreate] = useState(false)
-    
     const [page, setPage] = useState(1);
+    const [loading, setLoading] = useState(true);
+
 
 
     
@@ -146,19 +146,26 @@ function Dashboard() {
 
     
     const fetchUsers = async () => {
-        const data = await axiosAPI.get("/users/users",{params:
-            {
-                
-                page: page,
-                limit: 10
-            }},
-            {withCredentials: true})
-        console.log(data)
-        setUsers(data.data.data)
-        console.log("users ",users)
+        setLoading(true)
+        try {
+            const data = await axiosAPI.get("/users/users",{params:
+                {
+                    
+                    page: page,
+                    limit: 10
+                }},
+                {withCredentials: true})
+            console.log(data)
+            setLoading(false)
+            setUsers(data.data.data)
+            //console.log("users ",users)
+        } catch (error) {
+            console.log(error)
+        }
     }
 
     useEffect(() => {
+        
         fetchUsers();
         window.scrollTo(0, 0)
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -186,18 +193,18 @@ function Dashboard() {
             (<div className="flex flex-col justify-center content-center items-center align-middle w-full h-fit min-h-[90vh] ml-52 pt-24 gap-8 "
             style={{boxShadow:  "inset 2px 4px 4px 2px rgba(0, 0, 0, 0.3)"}}>
             
-            <Header create={create} setCreate={setCreate} setUsers={setUsers} page={page}/>
+            <Header create={create} setCreate={setCreate} setUsers={setUsers} page={page} loading={loading} setLoading={setLoading}/>
             
             {create && <CreateUserCard setCreate={setCreate} setPage={setPage} fetchUsers={fetchUsers} />}
 
-                {users.length>0 && users.map((user) => (
-                        <CustomCard key={user._id} id={user._id} firstName={user.first_name} lastName={user.last_name} email={user.email} avatar={user.avatar} phone={user.phone} address={user.address} role={user.role} fetchUsers={fetchUsers}/>
+                {loading ? <MoonLoader/> : users.map((user) => (
+                        <CustomCard key={user._id} id={user._id} firstName={user.first_name} lastName={user.last_name} email={user.email} avatar={user.avatar} phone={user.phone} address={user.address} role={user.role} fetchUsers={fetchUsers} loading={loading} setLoading={setLoading}/>
                 ))}
 
                 {/* {users.map((user) => (
                     <OutlinedCard key={user.title} title={user.title} description={user.description}/>
                 ))} */}
-                <div className="flex flex-row py-4 justify-center align-middle gap-8">
+                {!loading &&<div className="flex flex-row py-4 justify-center align-middle gap-8">
                     {(page>=2)&&<button className="w-20 h-10 bg-gray-50 rounded-3xl text-black font-medium hover:bg-gray-200 active:bg-gray-300 shadow-black"
                     style={{boxShadow: "2px 4px 4px 2px rgba(0, 0, 0, 0.2)"}}
                     onClick={handlePrev}
@@ -214,7 +221,7 @@ function Dashboard() {
                     Next
                     </button>}
                 
-            </div>
+            </div>}
             
             </div>)}
         </div>
