@@ -31,6 +31,7 @@ function LoginForm() {
     }, [authstatus])
 
     const loginUser = async(data) => {
+        console.log(data);
         setLoading(true)
         try{
             
