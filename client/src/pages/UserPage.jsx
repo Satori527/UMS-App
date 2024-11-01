@@ -2,9 +2,10 @@ import { useEffect, useState } from "react";
 import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from "react-router-dom";
+import { BarLoader } from "react-spinners";
 import { toast } from "react-toastify";
 import { axiosAPI } from "../api/axiosAPI";
-import { login } from "../store/authSlice";
+import { login, logout } from "../store/authSlice";
 function UserPage() {
 
     const navigate = useNavigate();
@@ -21,6 +22,8 @@ function UserPage() {
     const dispatch = useDispatch()
 
     const [editing, setEditing] = useState(false)
+    const [deleting, setDeleting] = useState(false)
+    const [loading, setLoading] = useState(false)
 
     // const [sFirstName, setSFirstName] = useState(userData?.user.first_name);
     // const [sLastName, setSLastName] = useState(userData?.user.last_name);
@@ -29,7 +32,9 @@ function UserPage() {
     // const [sAddress, setSAddress] = useState(userData?.user.address);
 
     const handleSave = async (formData) => {
+        setLoading(true);
         if (!formData) {
+            setLoading(false);
             return;
         }
     const data = {...formData,id:userData.user._id,role:userData.user.role,avatar:userData.user.avatar}
@@ -56,6 +61,7 @@ function UserPage() {
                     }
 
                     dispatch(login(newUserData));
+                    setLoading(false);
                     toast.success("User updated successfully");
                 }
                 console.log(response);
@@ -65,10 +71,35 @@ function UserPage() {
         
     } catch (error) {
         console.log(error);
+        setLoading(false);
         toast.error("User creation failed");
         
     }
 }
+
+const handleDelete = async () => {
+    setLoading(true);
+    setDeleting(true);
+
+    try {
+        const response = await axiosAPI.delete("/users/delete", {params: {id: userData.user._id}})
+        if (response.status === 200) {
+            setLoading(false);
+            setDeleting(false);
+            dispatch(logout());
+            toast.success("Account deleted successfully");
+            navigate("/signup");
+        }
+        console.log(response);
+        
+    } catch (error) {
+        console.log(error);
+        
+        setLoading(false);
+        toast.error("Account deletion failed");
+    }
+}
+
     useEffect(() => {
         reset();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -112,9 +143,18 @@ function UserPage() {
                             <p className="text-black font-medium text-lg  whitespace-nowrap text-left">{userData?.user.address}</p>
                         </div>
                         
-                        <div className="flex flex-row-reverse gap-2">
-                                    <button className="py-1 px-4 text-yellow-500 font-medium text-lg border-4 border-yellow-500 rounded-xl shadow-zinc-800 hover:bg-yellow-500 hover:text-white" onClick={() => setEditing(true)}>Edit</button>
-                        </div>
+                        {!deleting && <div className="flex flex-row-reverse gap-2">
+                            <button className="py-1 px-4 text-red-500 font-medium text-lg border-4 border-red-500 rounded-xl shadow-zinc-800 hover:bg-red-500 hover:text-white" onClick={() => setDeleting(true)}>Delete Your Account</button>
+                            <button className="py-1 px-4 text-yellow-500 font-medium text-lg border-4 border-yellow-500 rounded-xl shadow-zinc-800 hover:bg-yellow-500 hover:text-white" onClick={() => setEditing(true)}>Edit</button>
+                        </div>}
+                        {deleting && <div className='bottom-div flex flex-row-reverse gap-8 pr-8 w-full'>
+                            
+                            <button className="py-1 px-4 text-green-500 font-medium text-lg border-4 border-green-500 rounded-xl shadow-zinc-800 hover:bg-green-500 hover:text-white" onClick={() => setDeleting(false)}>Cancel</button>
+                            <button className="py-1 px-4 text-red-500 font-medium text-lg border-4 border-red-500 rounded-xl shadow-zinc-800 hover:bg-red-500 hover:text-white"
+                                onClick={handleDelete}
+                            >Delete For Sure</button>
+                            
+                        </div>}
                     </div>
 
                 </div>}
@@ -169,8 +209,10 @@ function UserPage() {
                                 <input className="py-1 px-4 text-green-500 font-medium text-lg border-4 border-green-500 rounded-xl hover:bg-green-500 hover:text-white " onClick={() => handleSave()} type="submit" value="Submit"/>
                                 
                             </div>
+                            
                         
                     </form>
+                    {loading && <BarLoader width={'100%'}/>}
                 </div>}
 
                 {/* {editing && <div  style={{  height: 'auto',width: '90%', maxWidth: '1200px', margin: '0 auto',border: '1px solid #aaaaaa',display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '36px',  borderRadius: '16px',boxShadow: '2px 4px 4px 2px rgba(0, 0, 0, 0.24)', backgroundColor: "white", padding: "32px" }}>

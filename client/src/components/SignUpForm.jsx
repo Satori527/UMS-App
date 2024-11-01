@@ -78,7 +78,8 @@ function SignupForm() {
             
         }catch(err){
             console.log(err);
-            toast.error("SignUp Failed");
+            setLoading(false)
+            toast.error(`SignUp Failed,\n ${err.message}`);
         }
     }
 

@@ -32,6 +32,7 @@ function CreateUserCard({ setCreate, fetchUsers, setPage, create}) {
     const handleCreate = async (data) => {
         setLoading(true);
         if (!data) {
+            setLoading(false);
             return;
         }
         // const data={
@@ -57,6 +58,7 @@ function CreateUserCard({ setCreate, fetchUsers, setPage, create}) {
 
         } catch (error) {
             console.log(error);
+            setLoading(false);
             toast.error("User creation failed");
         }
         
@@ -134,8 +136,8 @@ function CreateUserCard({ setCreate, fetchUsers, setPage, create}) {
                         <input className="py-[2px] px-3 text-green-500 font-medium text-lg border-2 border-green-500 rounded-lg hover:bg-green-500 hover:text-white" style={{fontWeight:'bold'}} type="submit" value="Create" />
                     </div>
                 </div>
-                {loading && <BarLoader width={'100%'}/>}
             </form>
+            {loading && <BarLoader width={'100%'}/>}
         </div>
         // <div className="expanded card" style={{  width: '90%', margin: '0 auto',border: '1px solid #707070',display: "flex", flexDirection: 'column', alignItems: 'center', gap: '32px',  borderRadius: '24px',boxShadow: '2px 4px 4px 2px rgba(0, 0, 0, 0.2)', }}>
 

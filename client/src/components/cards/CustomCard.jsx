@@ -45,16 +45,18 @@ function CustomCard({
     const handleSave = async (formData) => {
         setLoading(true);
         if (!formData) {
+            setLoading(false);
             return;
         }
         const data = {...formData,id: id,avatar:avatar}
         try {
                     const response = await axiosAPI.patch("/users/update", data)
-                    if (response.status === 100) {
+                    if (response.status === 200) {
                         setEditing(false);
-                        fetchUsers();
+                        
                         setLoading(false);
                         toast.success("User updated successfully");
+                        fetchUsers();
                     }
                     console.log(response);
                     console.log(id);
@@ -64,6 +66,8 @@ function CustomCard({
             
         } catch (error) {
             console.log(error);
+            setLoading(false);
+            toast.error("User update failed");
         }
         
     }
@@ -72,10 +76,8 @@ function CustomCard({
         setDeleting(true);
         console.log("deleted");
         try {
-            const response = await axiosAPI.delete("/users/delete", {
-                user_id: id
-            })
-            if (response.status === 100) {
+            const response = await axiosAPI.delete("/users/delete", {params: {id: id}})
+            if (response.status === 200) {
                 setDisplay("none");
                 fetchUsers();
                 setDeleting(false);
@@ -85,6 +87,8 @@ function CustomCard({
             
         } catch (error) {
             console.log(error);
+            
+            setLoading(false);
             toast.error("User deletion failed");
         }
     }

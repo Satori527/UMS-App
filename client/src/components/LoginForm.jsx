@@ -45,6 +45,7 @@ function LoginForm() {
             
         }catch(err){
             console.log(err.response.data);
+            setLoading(false)
             toast.error("Login Failed, Try Again");
 
         }
