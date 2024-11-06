@@ -1,6 +1,6 @@
 
 
-## A Full Stack User Management System with MERN Stack - Submission for Task 1 of Gokul Infocare Junior/Fresher Developer Recruitment Process as posted on Naukri.com.
+## A Full Stack User Management System with MERN Stack 
 
 ### Demonstration Video: [https://www.youtube.com/watch?v=3XqcBu8NlQY](https://www.youtube.com/watch?v=3XqcBu8NlQY)
 
